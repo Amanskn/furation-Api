@@ -2,11 +2,24 @@ const Items = require('../models/items')
 
 
 // ---------This is the action for getting all the items from the database
-module.exports.allItems=function(req,res){
-    return res.status(200).json({
-        success:true,
-        data:['Items']
-    })
+module.exports.allItems = async function(req,res){
+    
+    try {
+        const allItems = await Items.find({});
+        return res.status(200).json({
+            success:true,
+            List_of_all_Items:allItems
+        })
+        
+    } catch (error) {
+        console.log("Error in fetching the items from the database and the error is :-", error);
+        return res.status(500).json({
+            success:true,
+            message:'Internal server error'
+        })
+        
+    }
+
 }
 
 
