@@ -1,4 +1,4 @@
-const Items = require('../models/items');
+const Item = require('../models/items');
 const mongoose=require('mongoose')
 
 
@@ -6,9 +6,10 @@ const mongoose=require('mongoose')
 module.exports.allItems = async function(req,res){
     
     try {
-        const allItems = await Items.find({});
+        const allItems = await Item.find({});
         return res.status(200).json({
             success:true,
+            total_Items_Count:allItems.length,
             List_of_all_Items:allItems
         })
         
@@ -30,9 +31,10 @@ module.exports.allItems = async function(req,res){
 module.exports.specificItem = async function(req,res){
     try {
         const {id}=req.params;
-        console.log("This is the id",id)
+        // ---------- a simple check
+        // console.log("This is the id",id)
         const itemId = new mongoose.Types.ObjectId(id);
-        const item = await Items.findOne({_id:itemId});
+        const item = await Item.findOne({_id:itemId});
         if(item){
             return res.status(200).json({
                 success:true,
@@ -62,11 +64,35 @@ module.exports.specificItem = async function(req,res){
 
 
 // ---------This is the action for creating an item and saving it into the database
-module.exports.createItem=function(req,res){
-   return res.status(200).json({
-        success:true,
-        data:"create Item"
-   })
+module.exports.createItem = async function(req,res){
+   try {
+
+        const nameOfTheItem = req.body.name;
+        if(!nameOfTheItem){
+            return res.status(200).json({
+                success:true,
+                message:"Please provide the name of the product in order to create it",
+                
+            })
+
+        }
+        const newItem=await Item.create({
+            name:nameOfTheItem
+        });
+        return res.status(200).json({
+            success:true,
+            message:"Here is the item that just got created",
+            item:newItem
+        })
+    } catch (error) {
+        console.log("Error in creation of a new Item and the error is :-",error);
+        return res.status(200).json({
+            success:true,
+            message:"Internal server error",
+            
+        })
+        
+   }
 }
 
 
