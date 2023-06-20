@@ -7,6 +7,10 @@ module.exports.allItems = async function(req,res){
     
     try {
         const allItems = await Item.find({});
+        
+        //----------simple check 
+        // console.log(typeof allItems)
+
         return res.status(200).json({
             success:true,
             total_Items_Count:allItems.length,
@@ -98,20 +102,63 @@ module.exports.createItem = async function(req,res){
 
 
 // ------------This is the action for updating a specific item into the database
-module.exports.updateItem=function(req,res){
-    return res.status(200).json({
-        success:true,
-        data:"Update items"
-   })
+module.exports.updateItem = async function(req,res){
+   try {
+        const {id}=req.params;
+        // ---------- a simple check
+        // console.log("This is the id",id)
+        const nameToBeUpdated = req.body.name;
+        if(!nameToBeUpdated){
+            return res.status(200).json({
+                success:true,
+                message:"Please provide the name of the product in order to update it",
+                
+            })
+
+        }
+        
+        const itemId = new mongoose.Types.ObjectId(id);
+        const updatedItem= await Item.findByIdAndUpdate(itemId,{name:nameToBeUpdated},{new:true});
+        return res.status(200).json({
+            message:"Item updated successfully and the updated item is ",
+            updated_Item:updatedItem
+        })
+   } catch (error) {
+        console.log("There came and error while updating the item and the error is :-",error);
+        return res.status(200).json({
+            message:"Internal server error"
+        })
+
+   }
 }
 
 
 
 
 // ------------------This is the action for deleting a specific item from the database
-module.exports.deleteItem=function(req,res){
-   return res.status(200).json({
-        success:true,
-        data:"Delete Items"
-   })
+module.exports.deleteItem = async function(req,res){
+   try {
+        const {id} = req.params;
+        const itemId = new mongoose.Types.ObjectId(id);
+        const deletedItem = await Item.findByIdAndDelete(itemId);
+        if(!deletedItem){
+
+            return res.status(200).json({
+                success:true,
+                message:"No item exist with the provided id"
+            })
+        }
+        return res.status(200).json({
+            success:true,
+            message:"Item deleted successfully and the item was...",
+            deleted_item:deletedItem
+        })
+    } catch (error) {
+        console.log("An error came while deleting the items and the error is :-",error);
+        return res.status(200).json({
+            success:true,
+            message:"Internal server error"
+        })
+    
+   }
 }
