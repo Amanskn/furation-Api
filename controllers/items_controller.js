@@ -20,7 +20,7 @@ module.exports.allItems = async function(req,res){
     } catch (error) {
         console.log("Error in fetching the items from the database and the error is :-", error);
         return res.status(500).json({
-            success:true,
+            success:false,
             message:'Internal server error'
         })
         
@@ -47,7 +47,7 @@ module.exports.specificItem = async function(req,res){
             
         }
         else{
-            return res.status(200).json({
+            return res.status(404).json({
                 success:true,
                 message:`No item exists with the id=${id}`
             })
@@ -57,7 +57,7 @@ module.exports.specificItem = async function(req,res){
     } catch (error) {
         console.log("Error in fetching the single item from the database and the error is :-", error);
         return res.status(500).json({
-            success:true,
+            success:false,
             message:'Internal server error'
         })
         
@@ -73,7 +73,7 @@ module.exports.createItem = async function(req,res){
 
         const nameOfTheItem = req.body.name;
         if(!nameOfTheItem){
-            return res.status(200).json({
+            return res.status(400).json({
                 success:true,
                 message:"Please provide the name of the product in order to create it",
                 
@@ -90,8 +90,8 @@ module.exports.createItem = async function(req,res){
         })
     } catch (error) {
         console.log("Error in creation of a new Item and the error is :-",error);
-        return res.status(200).json({
-            success:true,
+        return res.status(500).json({
+            success:false,
             message:"Internal server error",
             
         })
@@ -109,7 +109,7 @@ module.exports.updateItem = async function(req,res){
         // console.log("This is the id",id)
         const nameToBeUpdated = req.body.name;
         if(!nameToBeUpdated){
-            return res.status(200).json({
+            return res.status(400).json({
                 success:true,
                 message:"Please provide the name of the product in order to update it",
                 
@@ -125,7 +125,8 @@ module.exports.updateItem = async function(req,res){
         })
    } catch (error) {
         console.log("There came and error while updating the item and the error is :-",error);
-        return res.status(200).json({
+        return res.status(500).json({
+            success:false,
             message:"Internal server error"
         })
 
@@ -143,7 +144,7 @@ module.exports.deleteItem = async function(req,res){
         const deletedItem = await Item.findByIdAndDelete(itemId);
         if(!deletedItem){
 
-            return res.status(200).json({
+            return res.status(400).json({
                 success:true,
                 message:"No item exist with the provided id"
             })
@@ -155,8 +156,8 @@ module.exports.deleteItem = async function(req,res){
         })
     } catch (error) {
         console.log("An error came while deleting the items and the error is :-",error);
-        return res.status(200).json({
-            success:true,
+        return res.status(500).json({
+            success:false,
             message:"Internal server error"
         })
     
